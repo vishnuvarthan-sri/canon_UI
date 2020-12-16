@@ -112,7 +112,7 @@ editMode:false
   render() {
 
     return (
-      <div style={{ flexGrow: 1, display: "flex", flexFlow: "column" ,width: "100%",height:"100%",paddingBottom:220}}>
+      <div style={{ flexGrow: 1, display: "flex", flexFlow: "column" ,width: "100%",height:"100%",paddingBottom:240}}>
         <div style={{ padding: 50, display: "inline-block" }}>
           <Segment
             style={{
@@ -143,7 +143,7 @@ editMode:false
               <Grid.Column >
                 <Button
                   label={
-                    <Label size="medium" color="green" style={{ cursor: "pointer" }} >
+                    <Label size="medium" color="green" style={{ cursor: "pointer",marginTop:-10 }} >
                       Products
                      </Label>
                   }
