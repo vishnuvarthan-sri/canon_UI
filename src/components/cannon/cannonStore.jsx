@@ -1,6 +1,9 @@
 import React, { Component } from "react";
-import ReactTable from "react-table-6";
-import 'react-table-6/react-table.css'
+import ReactTable from "react-table-v6"
+import 'react-table-v6/react-table.css'
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { withRouter } from "react-router";
 import {
     Icon,
     Segment,
@@ -16,11 +19,16 @@ import {
 } from "semantic-ui-react";
 import selectTable from "react-table-6/lib/hoc/selectTable";
 import CannonProduct from './cannonProduct.jsx';
+import {
+    fetchCannonStoreAction,
+    fetchCannonProductAction,
+    fetchAuditorsAction,
+  } from "../../actions/cannon-action";
 // var TableSelect = require('react-table-select');
 // import TableSelect from "react-select-table";
 // import 'react-select-table/dist/index.css';
 var CheckBoxTable = selectTable(ReactTable);
-export default class CannonStore extends Component {
+export class CannonStore extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -31,27 +39,54 @@ export default class CannonStore extends Component {
             value: "Initial Stores",
             initialAndAssignedStores: [],
             pendingAndCompletedStores: [],
-            selection: [],
-            userId: [],
+            user: [{status:"Completed"},{status:"Initial"}],
             selectAll: true,
             userSelectionAll: false,
             openAssignModal: false,
-            cannonStoreList: [],
+            storeList:[],
             storeStatus: ""
         };
+    }
+
+    componentDidMount(){
+        this.props.fetchCannonStoreAction();
     }
     onClose = () => {
         this.props.onClose();
     };
 
-    IntialTable = () => {
+    static getDerivedStateFromProps(nextProps){
+        let data = []
+        if(nextProps.cannon.cannonStoreList){
+          data.push(nextProps.cannon.cannonStoreList)
+        }
+        console.log(data,"----")
+        return{
+          storeList:data
+        }
+      } 
 
+
+    IntialTable = () => {
         this.setState({
             isStoreView: false
         });
         this.setState({
             value: "Initial Stores"
         });
+          var stores = this.state.storeList;
+        //  console.log(stores,"helloooo")
+        var initialAndAssignedStores = [];
+            stores.forEach(data => {
+                console.log(data[1].status,"statussss")
+              if (data[1].status === "Initial") {
+                initialAndAssignedStores.push(data[1]);
+              }
+            });
+          
+          this.setState({
+            initialAndAssignedStores,
+          });
     }
     IntialTable2 = () => {
 
@@ -61,9 +96,18 @@ export default class CannonStore extends Component {
         this.setState({
             value: "Assigned Stores"
         });
+        var stores =this.state.storeList;
+        var initialAndAssignedStores = [];
+            stores.forEach(data => {
+              if (data[2].status === "Assigned") {
+                initialAndAssignedStores.push(data[2]);
+              }
+            });
+          this.setState({
+            initialAndAssignedStores
+          });
     }
     CompletedTable = () => {
-
 
         this.setState({
             isStoreView: true
@@ -71,6 +115,17 @@ export default class CannonStore extends Component {
         this.setState({
             value: "Inprogress Stores"
         });
+        var stores =this.state.storeList;
+        var pendingAndCompletedStores = []; 
+            stores.forEach(data => {
+              if (data[0].status === "Completed") {
+                pendingAndCompletedStores.push(data[0]);
+              }
+            });
+          
+          this.setState({
+            pendingAndCompletedStores:pendingAndCompletedStores
+          });
     }
     CompletedTable2 = () => {
         this.setState({
@@ -79,6 +134,16 @@ export default class CannonStore extends Component {
         this.setState({
             value: "Completed Stores"
         });
+        var stores =this.state.storeList;
+        var pendingAndCompletedStores = [];
+            stores.forEach(data => {
+              if (data[0].status === "Completed") {
+                pendingAndCompletedStores.push(data[0]);
+              }
+            });
+          this.setState({
+               pendingAndCompletedStores
+          });
     }
 
     onProduct = () => {
@@ -103,50 +168,13 @@ export default class CannonStore extends Component {
             selectAll: true
         })
     }
+    
+
+
 
     render() {
-        var userlist = [{
-            region: "south",
-            state: "Tamilnadu",
-            city: "Madurai",
-            cisVersion: "Version1",
-            shipSiteLocation: "Kanyakumari",
-
-        },
-        {
-            region: "south",
-            state: "Tamilnadu",
-            city: "Coimbatore",
-            cisVersion: "Version1",
-            shipSiteLocation: "Kanyakumari",
-
-        },
-        {
-            region: "south",
-            state: "Tamilnadu",
-            city: "Trichy",
-            cisVersion: "Version1",
-            shipSiteLocation: "Kanyakumari",
-
-        },
-        {
-            region: "North",
-            state: "Uttarpradeh",
-            city: "Lucknow",
-            cisVersion: "Version2",
-            shipSiteLocation: "Kolkata",
-
-        }
-
-        ];
-        var Completelist = [{
-            region: "North",
-            state: "Uttarpradeh",
-            city: "Lucknow",
-            cisVersion: "Version2",
-            shipSiteLocation: "Kolkata",
-
-        }];
+        var stores =this.props.cannon.cannonStoreList;
+       
         var Modallist = [{
             email: "xxx123@gmail.com"
         },
@@ -430,7 +458,6 @@ export default class CannonStore extends Component {
                     </Label>
                                     }
                                     value="Assigned Stores"
-
                                     onClick={this.IntialTable2}
                                     style={{ marginLeft: 10 }}
                                 />
@@ -464,7 +491,6 @@ export default class CannonStore extends Component {
                     </Label>
                                     }
                                     value="Completed Stores"
-
                                     onClick={this.CompletedTable2}
                                     style={{ marginLeft: 10 }}
                                 />
@@ -521,9 +547,7 @@ export default class CannonStore extends Component {
                             {this.state.isStoreView
                                 ? <ReactTable
                                     noDataText="We couldn't find anything"
-                                    data={
-                                        this.state.value === "Inprogress Stores" ? userlist : this.state.value === "Completed Stores" ? Completelist : []
-                                    }
+                                    data={this.state.pendingAndCompletedStores}
                                     columns={
                                         this.state.value === "Inprogress Stores" ? columns : this.state.value === "Completed Stores" ? columns : []
                                     }
@@ -539,7 +563,7 @@ export default class CannonStore extends Component {
                                     filterable={true}
                                     defaultPageSize={20}
                                     // defaultFilterMethod={this.searchFilter}
-                                    data={userlist}
+                                    data={this.state.initialAndAssignedStores}
                                     columns={
                                         this.state.value === "Initial Stores" ? InitialColumn : this.state.value === "Assigned Stores" ? Assignedcolumns : []
                                     }
@@ -589,3 +613,25 @@ function AuditTableCell(props) {
         </div>
     );
 }
+
+const mapStateToProps = state => {
+    return {
+      //reducer props to state
+      cannon: state.cannon
+    };
+  };
+  
+  const mapDispatchToProps = dispatch => {
+    return bindActionCreators(
+      {
+        fetchCannonProductAction,
+        fetchAuditorsAction,
+        fetchCannonStoreAction
+      },
+      dispatch
+    );
+  };
+  
+  export default withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(CannonStore)
+  );

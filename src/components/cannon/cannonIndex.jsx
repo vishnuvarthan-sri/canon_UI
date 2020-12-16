@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import ReactTable from "react-table-6";
-import 'react-table-6/react-table.css'
+import ReactTable from "react-table-v6"
+import 'react-table-v6/react-table.css'
 import TabView from "./cannonTabView.jsx";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { withRouter } from "react-router";
 import {
   fetchCannonTemplatesAction,
   fetchCannonStoreAction, 
@@ -15,14 +18,26 @@ class CannonIndex extends Component {
     this.state={
       
       TemplatesView:true,
-      
+      templateData:[]
     }
   }
   
- 
+  componentDidMount() {
+    this.props.fetchCannonTemplatesAction();
+  }
+  
+  static getDerivedStateFromProps(nextProps){
+    let data = []
+    if(nextProps.cannon.cannonTemplate){
+      data.push(nextProps.cannon.cannonTemplate)
+    }
+    return{
+      templateData:data
+    }
+  } 
 
   handleTableClick = template => {
-    console.log("name");
+  
     this.setState({
       TemplatesView:false
     })
@@ -30,7 +45,7 @@ class CannonIndex extends Component {
   }
 
   AnotherClick = () => {
-    console.log("hello new")
+  
     this.setState({
       TemplatesView:true
 
@@ -40,21 +55,15 @@ class CannonIndex extends Component {
 
   render() {
 
-    const data = [
-      {
-        auditname: 'New',
-      },
-
-    ];
-
+ 
     const columns = [{
       Header: 'Templatename',
-      accessor: 'auditname',
+      accessor: 'auditName',
       style: { textAlign: "center" },
       Cell: info =>
         <AuditTableCell
           row={info.original}
-          text={info.original.auditname}
+          text={info.original.auditName}
           onClick={this.handleTableClick}
         />
     }
@@ -71,7 +80,7 @@ class CannonIndex extends Component {
               <div>
                 <ReactTable
                   noDataText="We couldn't find anything"
-                  data={data}
+                  data={this.state.templateData}
                   columns={columns}
                   defaultPageSize={20}
                   filterable={true}
@@ -111,6 +120,26 @@ function AuditTableCell(props) {
 }
 
 
-export default CannonIndex;
+const mapStateToProps = state => {
+  return {
+    //reducer props to state
+    cannon: state.cannon
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return bindActionCreators(
+    {
+      fetchCannonTemplatesAction,
+      fetchCannonStoreAction,
+      // actions
+    },
+    dispatch
+  );
+};
+
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(CannonIndex)
+);
 
 

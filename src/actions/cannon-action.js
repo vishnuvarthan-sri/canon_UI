@@ -4,10 +4,10 @@ import * as FileSaver from 'file-saver';
 import * as types from './types';
 
 export const fetchCannonTemplatesAction = () => {
-    
+    console.log("call coming")
     return function(dispatch) {
         axios
-            .get(types.API_URL + '/auditor/v1/canon/getTemplates')
+            .get(types.API_URL + '/templates')
             .then(function(response) {
                 
                 dispatch({
@@ -27,46 +27,46 @@ export const fetchCannonTemplatesAction = () => {
 
 
 
-export const fetchCannonStoreAction = ({templateId,onSuccess,onFailure}) => {
+export const fetchCannonStoreAction = () => {
     return function(dispatch) {
         axios
-            .get(types.API_URL + `/auditor/v1/canon/getStores?templateId=${templateId}`)
+            .get(types.API_URL + '/cannon_master')
             .then(function(response) {
                 dispatch({
                     type: types.FETCH_CANNON_STORE_SUCCESS_ACTION,
                     payload: response.data
                 });
-                onSuccess()
+                
             })
             .catch(function(error) {
                 dispatch({
                     type: types.FETCH_CANNON_STORE_FAILURE_ACTION,
                     payload: error
                 });
-                onFailure()
+                
             });
     };
 };
 
-export const fetchCannonProductAction = ({templateId,storeId,onSuccess,onFailure}) => {
+export const fetchCannonProductAction = () => {
     
     return function(dispatch) {
         axios
-            .get(types.API_URL + `/auditor/v1/canon/getProducts?templateId=${templateId}&storeId=${storeId}`)
+            .get(types.API_URL + '/products')
             .then(function(response) {
                 
                 dispatch({
                     type: types.FETCH_CANNON_PRODUCT_SUCCESS_ACTION,
                     payload: response.data
                 });
-                onSuccess(response)
+                
             })
             .catch(function(error) {
                 dispatch({
                     type: types.FETCH_CANNON_PRODUCT_FAILURE_ACTION,
                     payload: error
                 });
-                onFailure()
+                
             });
     };
 };
