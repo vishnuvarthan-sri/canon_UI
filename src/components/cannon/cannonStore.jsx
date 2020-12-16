@@ -39,7 +39,6 @@ export class CannonStore extends Component {
             value: "Initial Stores",
             initialAndAssignedStores: [],
             pendingAndCompletedStores: [],
-            user: [{status:"Completed"},{status:"Initial"}],
             selectAll: true,
             userSelectionAll: false,
             openAssignModal: false,
@@ -50,6 +49,12 @@ export class CannonStore extends Component {
 
     componentDidMount(){
         this.props.fetchCannonStoreAction();
+       this.setState({
+           isStoreView:false,
+           value:"Intial Store"
+       });
+        
+
     }
     onClose = () => {
         this.props.onClose();

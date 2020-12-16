@@ -77,9 +77,7 @@ export class CannonProduct extends Component {
     if (type === "yes") {
       questions.forEach(data => {
         if (data.question === value) {
-          console.log(data.answer.label,"yupp")
-          data.options[1].label = "Yes";
-          data.options[1].value = 1;
+          
           data.isChecked.optionYesChecked = true;
           data.isChecked.optionNoChecked = false;
         }
@@ -87,9 +85,8 @@ export class CannonProduct extends Component {
     } else if (type === "no") {
       questions.forEach(data => {
         if (data.question === value) {
-          console.log(data.options,"nopee")
-          data.options[0].label = "No";
-          data.options[0].value = 0;
+    
+        
           data.isChecked.optionNoChecked = true;
           data.isChecked.optionYesChecked = false;
         }
@@ -115,8 +112,8 @@ editMode:false
   render() {
 
     return (
-      <div style={{ flexGrow: 1, display: "flex", flexFlow: "column" }}>
-        <div style={{ padding: 20, display: "inline-block" }}>
+      <div style={{ flexGrow: 1, display: "flex", flexFlow: "column" ,width: "100%",height:"100%",paddingBottom:220}}>
+        <div style={{ padding: 50, display: "inline-block" }}>
           <Segment
             style={{
               color: "#808080",
@@ -125,13 +122,14 @@ editMode:false
               marginTop: 7,
               display: "inline-block",
               position: "absolute",
-              right: 58
+              right: 50
             }}
           >
             <Icon name="arrow" className="left large" color="brown" onClick={this.onClose} />
           </Segment>
           <h1
             style={{
+              marginTop:-10,
               color: "orange",
               display: "inline-block"
             }}
@@ -139,7 +137,7 @@ editMode:false
             {this.onDisplay()}
           </h1>
         </div>
-        <div style={{ padding: 40 }}>
+        <div style={{ padding: 50 }}>
           <Grid>
             <Grid.Row>
               <Grid.Column >
@@ -157,7 +155,7 @@ editMode:false
               {this.state.questions.length > 0
                 ? <Grid.Column
                     floated="right"
-                    style={{ right: 50, marginTop: 25 }}
+                    style={{ right: 30, marginTop: 25 }}
                   >
                     {this.state.editMode === false &&
                       <Button color="teal" onClick={this.edit}>
